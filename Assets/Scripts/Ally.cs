@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour, IGoap
+public class Ally : MonoBehaviour, IGoap
 {
     private Dictionary<string, object> worldState;
     [SerializeField] private Queue<Action> actionPlan;
@@ -12,8 +12,9 @@ public class Enemy : MonoBehaviour, IGoap
     private NavMeshPath path;
     [SerializeReference] private GameObject target;
 
-    private float visionAngle = 50.0f;
-    private float visionDistance = 20.0f;
+
+    private float visionAngle = 70.0f;
+    private float visionDistance = 30.0f;
 
     void Start()
     {
@@ -27,11 +28,7 @@ public class Enemy : MonoBehaviour, IGoap
     private void AddStartState()
     {
         //ToDo: make this non-static
-        worldState.Add("seesWeapon", false);
-        worldState.Add("hasWeapon", false);
         worldState.Add("seesPlayer", false);
-        worldState.Add("playerKilled", false);
-        worldState.Add("nearWeapon", false);
         worldState.Add("nearPlayer", false);
     }
 
@@ -40,42 +37,42 @@ public class Enemy : MonoBehaviour, IGoap
         /**
  * Apply the stateChange to the currentState
  */
-        
-            Dictionary<string, object> state = new Dictionary<string, object>();
-            // copy the KVPs over as new objects
-            foreach (KeyValuePair<string, object> s in worldState)
+
+        Dictionary<string, object> state = new Dictionary<string, object>();
+        // copy the KVPs over as new objects
+        foreach (KeyValuePair<string, object> s in worldState)
+        {
+            state.Add(s.Key, s.Value);
+        }
+
+        foreach (KeyValuePair<string, object> change in finishedAction.Effects)
+        {
+            // if the key exists in the current state, update the Value
+            bool exists = false;
+
+            foreach (KeyValuePair<string, object> s in state)
             {
-                state.Add(s.Key, s.Value);
-            }
-
-            foreach (KeyValuePair<string, object> change in finishedAction.Effects)
-            {
-                // if the key exists in the current state, update the Value
-                bool exists = false;
-
-                foreach (KeyValuePair<string, object> s in state)
+                if (s.Key.Equals(change.Key))
                 {
-                    if (s.Key.Equals(change.Key))
-                    {
-                        exists = true;
-                        state.Remove(s.Key);
-                        state.Add(change.Key, change.Value);
-                        break;
-                    }
-                }
-
-                if (exists)
-                {
-                    //state.RemoveWhere((KeyValuePair<string, object> kvp) => { return kvp.Key.Equals(change.Key); });
-                    //KeyValuePair<string, object> updated = new KeyValuePair<string, object>(change.Key, change.Value);
-                    //state.Add(updated);
-                }
-                // if it does not exist in the current state, add it
-                else
-                {
+                    exists = true;
+                    state.Remove(s.Key);
                     state.Add(change.Key, change.Value);
+                    break;
                 }
             }
+
+            if (exists)
+            {
+                //state.RemoveWhere((KeyValuePair<string, object> kvp) => { return kvp.Key.Equals(change.Key); });
+                //KeyValuePair<string, object> updated = new KeyValuePair<string, object>(change.Key, change.Value);
+                //state.Add(updated);
+            }
+            // if it does not exist in the current state, add it
+            else
+            {
+                state.Add(change.Key, change.Value);
+            }
+        }
         worldState = state;
     }
     /*
@@ -133,3 +130,4 @@ public class Enemy : MonoBehaviour, IGoap
         return visionDistance;
     }
 }
+
