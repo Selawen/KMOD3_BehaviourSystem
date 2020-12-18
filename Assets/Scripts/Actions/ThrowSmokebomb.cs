@@ -14,11 +14,11 @@ public class ThrowSmokebomb : Action
     public ThrowSmokebomb()
     {
         name = "throwing smoke bomb";
-        addPrecondition("hidden", true);
-        addPrecondition("playerInDanger", true);
-        addPrecondition("smokebombThrown", false);
-        addEffect("smokebombThrown", true);
-        addEffect("playerInDanger", false);
+        AddPrecondition("hidden", true);
+        AddPrecondition("playerInDanger", true);
+        AddPrecondition("smokebombThrown", false);
+        AddEffect("smokebombThrown", true);
+        AddEffect("playerInDanger", false);
     }
 
     public override void OnEnterAction()
@@ -59,7 +59,7 @@ public class ThrowSmokebomb : Action
             smokebomb.transform.localScale = new Vector3(5, 5, 5);
             Vector3 smokePos = Vector3.Lerp(player.transform.position, enemy.transform.position, 0.3f);
             smokebomb.transform.position = smokePos;
-            smokebomb.GetComponent<Collider>().isTrigger = true;
+            //smokebomb.GetComponent<Collider>().isTrigger = true;
             Destroy(smokebomb, 5);
 
             actionCompleted = true;

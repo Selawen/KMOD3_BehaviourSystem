@@ -9,10 +9,10 @@ public class MoveToWeapon : Action
     public MoveToWeapon()
     {
         name = "moving towards weapon";
-        addPrecondition("hasWeapon", false);
-        addPrecondition("seesWeapon", true);
-        addPrecondition("nearWeapon", false);
-        addEffect("nearWeapon", true);
+        AddPrecondition("hasWeapon", false);
+        AddPrecondition("seesWeapon", true);
+        AddPrecondition("nearWeapon", false);
+        AddEffect("nearWeapon", true);
     }
 
     public override void OnEnterAction()

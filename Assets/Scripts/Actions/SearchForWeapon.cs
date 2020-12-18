@@ -13,10 +13,10 @@ public class SearchForWeapon : Action
     public SearchForWeapon()
     {
         name = "looking for weapon";
-        addPrecondition("seesWeapon", false);
-        addPrecondition("hasWeapon", false);
-        addPrecondition("hasSpottedPlayer", true);
-        addEffect("seesWeapon", true);
+        AddPrecondition("seesWeapon", false);
+        AddPrecondition("hasWeapon", false);
+        AddPrecondition("hasSpottedPlayer", true);
+        AddEffect("seesWeapon", true);
     }
 
     public override void OnEnterAction()

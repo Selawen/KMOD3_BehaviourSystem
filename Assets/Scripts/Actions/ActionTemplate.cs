@@ -9,8 +9,8 @@ public class ActionTemplate : Action
     public ActionTemplate()
     {
         name = "action name";
-        addPrecondition("precondition", true);
-        addEffect("effect", true);
+        AddPrecondition("precondition", true);
+        AddEffect("effect", true);
     }
 
     public override void OnEnterAction()

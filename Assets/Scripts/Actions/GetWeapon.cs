@@ -10,10 +10,10 @@ public class GetWeapon : Action
     public GetWeapon()
     {
         name = "picking up weapon";
-        addPrecondition("nearWeapon", true);
-        addPrecondition("seesWeapon", true);
-        addPrecondition("hasWeapon", false);
-        addEffect("hasWeapon", true);
+        AddPrecondition("nearWeapon", true);
+        AddPrecondition("seesWeapon", true);
+        AddPrecondition("hasWeapon", false);
+        AddEffect("hasWeapon", true);
     }
 
     public override void OnEnterAction()

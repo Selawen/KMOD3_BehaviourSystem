@@ -10,9 +10,9 @@ public class Hide : Action
     public Hide()
     {
         name = "hiding";
-        addPrecondition("hidden", false);
-        addPrecondition("playerInDanger", true);
-        addEffect("hidden", true);
+        AddPrecondition("hidden", false);
+        AddPrecondition("playerInDanger", true);
+        AddEffect("hidden", true);
     }
 
     public override void OnEnterAction()
@@ -53,7 +53,8 @@ public class Hide : Action
             }
         }
 
-        Vector3 hidingPos = (target.transform.position - closest.gameObject.transform.position) + (target.transform.position - closest.gameObject.transform.position).normalized;
+        Vector3 hidingPos = (closest.gameObject.transform.position) + (target.transform.position - closest.gameObject.transform.position).normalized;
+
 
         if (NavMesh.CalculatePath(transform.position, hidingPos, NavMesh.AllAreas, path))
         {

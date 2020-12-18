@@ -14,11 +14,11 @@ public class MoveToPlayer : Action
     public MoveToPlayer()
     {
         name = "moving towards player";
-        addPrecondition("hasWeapon", true);
-        addPrecondition("seesPlayer", true);
-        addPrecondition("nearPlayer", false);
-        addPrecondition("playerKilled", false);
-        addEffect("nearPlayer", true);
+        AddPrecondition("hasWeapon", true);
+        AddPrecondition("seesPlayer", true);
+        AddPrecondition("nearPlayer", false);
+        AddPrecondition("playerKilled", false);
+        AddEffect("nearPlayer", true);
     }
 
     public override void OnEnterAction()

@@ -19,12 +19,12 @@ public abstract class Action : MonoBehaviour
         effects = new Dictionary<string, object>();
     }
 
-    public void addPrecondition(string key, object value)
+    public void AddPrecondition(string key, object value)
     {
         preconditions.Add(key, value);
     }
 
-    public void removePrecondition(string key)
+    public void RemovePrecondition(string key)
     {
         KeyValuePair<string, object> remove = default(KeyValuePair<string, object>);
         foreach (KeyValuePair<string, object> kvp in preconditions)
@@ -36,12 +36,12 @@ public abstract class Action : MonoBehaviour
             preconditions.Remove(remove.Key);
     }
 
-    public void addEffect(string key, object value)
+    public void AddEffect(string key, object value)
     {
         effects.Add(key, value);
     }
 
-    public void removeEffect(string key)
+    public void RemoveEffect(string key)
     {
         KeyValuePair<string, object> remove = default(KeyValuePair<string, object>);
         foreach (KeyValuePair<string, object> kvp in effects)

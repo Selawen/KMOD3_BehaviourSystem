@@ -13,10 +13,11 @@ public class SearchForPlayer : Action
     public SearchForPlayer()
     {
         name = "looking for player";
-        addPrecondition("hasWeapon", true);
-        addPrecondition("seesPlayer", false);
-        addPrecondition("playerKilled", false);
-        addEffect("seesPlayer", true);
+        AddPrecondition("hasWeapon", true);
+        AddPrecondition("seesPlayer", false);
+        AddPrecondition("playerKilled", false);
+        AddPrecondition("hasSpottedPlayer", true);
+        AddEffect("seesPlayer", true);
     }
 
     public override void OnEnterAction()

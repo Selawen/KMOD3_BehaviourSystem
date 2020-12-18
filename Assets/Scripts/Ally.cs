@@ -35,6 +35,7 @@ public class Ally : MonoBehaviour, IGoap
         worldState.Add("seesPlayer", false);
         worldState.Add("nearPlayer", false);
         worldState.Add("hasWeapon", true);
+        worldState.Add("hasSpottedPlayer", true);
         worldState.Add("hidden", false);
         worldState.Add("smokebombThrown", false);
         worldState.Add("playerKilled", false);
@@ -110,20 +111,6 @@ public class Ally : MonoBehaviour, IGoap
         }
     }
 
-    public bool moveAgent(Action nextAction)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void planAborted(Action aborter)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void planFailed(Dictionary<string, object> failedGoal)
-    {
-        throw new System.NotImplementedException();
-    }
 
     public void planFound(Queue<Action> actions)
     {
@@ -168,6 +155,8 @@ public class Ally : MonoBehaviour, IGoap
             }
         }
         worldState["playerInDanger"] = false;
+        worldState["smokebombTrown"] = false;
+        worldState["hidden"] = false;
         target = player;
 
         if ((transform.position - player.transform.position).magnitude > nearDistance)

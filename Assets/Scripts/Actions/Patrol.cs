@@ -16,9 +16,9 @@ public class Patrol : Action
     public Patrol()
     {
         name = "patrolling";
-        addPrecondition("hasSpottedPlayer", false);
-        addPrecondition("playerKilled", false);
-        addEffect("hasSpottedPlayer", true);
+        AddPrecondition("hasSpottedPlayer", false);
+        AddPrecondition("playerKilled", false);
+        AddEffect("hasSpottedPlayer", true);
     }
 
     public override void OnEnterAction()

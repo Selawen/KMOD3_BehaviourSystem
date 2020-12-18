@@ -153,15 +153,15 @@ public class Planner
         {
 
             // if the parent state has the conditions for this action's preconditions, we can use it here
-            if (inState(action.Preconditions, parent.state))
+            if (InState(action.Preconditions, parent.state))
             {
 
                 // apply the action's effects to the parent state
-                Dictionary<string, object> currentState = populateState(parent.state, action.Effects);
+                Dictionary<string, object> currentState = PopulateState(parent.state, action.Effects);
                 //Debug.Log(GoapAgent.prettyPrint(currentState));
                 Node node = new Node(parent, parent.runningCost + action.Cost, currentState, action);
 
-                if (inState(goal, currentState))
+                if (InState(goal, currentState))
                 {
                     // we found a solution!
                     leaves.Add(node);
@@ -170,7 +170,7 @@ public class Planner
                 else
                 {
                     // not at a solution yet, so test all the remaining actions and branch out the tree
-                    HashSet<Action> subset = actionSubset(usableActions, action);
+                    HashSet<Action> subset = ActionSubset(usableActions, action);
                     bool found = BuildGraph(node, leaves, subset, goal);
                     if (found)
                         foundOne = true;
@@ -184,7 +184,7 @@ public class Planner
     /**
      * Create a subset of the actions excluding the removeMe one. Creates a new set.
      */
-    private HashSet<Action> actionSubset(HashSet<Action> actions, Action removeMe)
+    private HashSet<Action> ActionSubset(HashSet<Action> actions, Action removeMe)
     {
         HashSet<Action> subset = new HashSet<Action>();
         foreach (Action a in actions)
@@ -199,7 +199,7 @@ public class Planner
      * Check that all items in 'test' are in 'state'. If just one does not match or is not there
      * then this returns false.
      */
-    private bool inState(Dictionary<string, object> test, Dictionary<string, object> state)
+    private bool InState(Dictionary<string, object> test, Dictionary<string, object> state)
     {
         bool allMatch = true;
         foreach (KeyValuePair<string, object> t in test)
@@ -225,7 +225,7 @@ public class Planner
     /**
      * Apply the stateChange to the currentState
      */
-    private Dictionary<string, object> populateState(Dictionary<string, object> currentState, Dictionary<string, object> stateChange)
+    private Dictionary<string, object> PopulateState(Dictionary<string, object> currentState, Dictionary<string, object> stateChange)
     {
         Dictionary<string, object> state = new Dictionary<string, object>();
         // copy the KVPs over as new objects

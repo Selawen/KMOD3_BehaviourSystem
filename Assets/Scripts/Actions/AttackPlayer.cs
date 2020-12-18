@@ -10,12 +10,12 @@ public class AttackPlayer : Action
     public AttackPlayer()
     {
         name = "attacking player";
-        addPrecondition("hasWeapon", true); 
-        addPrecondition("seesPlayer", true); 
-        addPrecondition("nearPlayer", true); 
-        addPrecondition("hasSpottedPlayer", true); 
-        addPrecondition("playerKilled", false); 
-        addEffect("playerKilled", true);
+        AddPrecondition("hasWeapon", true); 
+        AddPrecondition("seesPlayer", true); 
+        AddPrecondition("nearPlayer", true); 
+        AddPrecondition("hasSpottedPlayer", true); 
+        AddPrecondition("playerKilled", false); 
+        AddEffect("playerKilled", true);
     }
 
     public override void OnEnterAction()

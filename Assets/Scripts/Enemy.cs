@@ -14,12 +14,17 @@ public class Enemy : MonoBehaviour, IGoap
     [SerializeReference] private GameObject player;
 
     [SerializeReference] private float visionAngle = 50.0f;
-    [SerializeReference] private float visionDistance = 30.0f;
+    [SerializeReference] private float visionDistance = 20.0f;
     [SerializeReference] private float nearDistance = 1.5f;
-    [SerializeReference] private float lostDistance = 10.0f;
+    [SerializeReference] private float lostDistance = 30.0f;
+
+    float startTime;
+    float lostSearchingTime;
 
     void Awake()
     {
+        startTime = Time.time;
+       
         worldState = new Dictionary<string, object>();
         actionPlan = new Queue<Action>();
         AddStartState();
@@ -119,21 +124,6 @@ public class Enemy : MonoBehaviour, IGoap
         }
     }
 
-    public bool moveAgent(Action nextAction)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void planAborted(Action aborter)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void planFailed(Dictionary<string, object> failedGoal)
-    {
-        throw new System.NotImplementedException();
-    }
-
     public void planFound(Queue<Action> actions)
     {
         actionPlan = actions;
@@ -170,17 +160,40 @@ public class Enemy : MonoBehaviour, IGoap
         {
             worldState["nearPlayer"] = false;
         }
+
+        if ((bool)worldState["seesPlayer"])
+        {
+            lostSearchingTime = Time.time;
+        }
+
         if ((transform.position - player.transform.position).magnitude > lostDistance)
         {
-            worldState["seesPlayer"] = false;
-        }
-        if (Physics.Raycast(transform.position, (player.transform.position - transform.position), out RaycastHit raycastHit))
-        {
-            if (raycastHit.transform.position != player.transform.position)
+            if ((bool)worldState["seesPlayer"])
             {
+                lostSearchingTime = Time.time;
                 worldState["seesPlayer"] = false;
-                worldState["hasSpottedPlayer"] = false;
+                //worldState["hasSpottedPlayer"] = false; 
             }
+
+        }
+        
+        if ((Time.time - startTime) >= 1)
+        {
+            startTime = Time.time;
+            if (Physics.Raycast(transform.position, (player.transform.position - transform.position), out RaycastHit raycastHit) && (bool)worldState["seesPlayer"])
+            {
+                if (raycastHit.transform.position != player.transform.position)
+                {
+                    lostSearchingTime = Time.time;
+                    worldState["seesPlayer"] = false;
+                    //worldState["hasSpottedPlayer"] = false;
+                }
+            }
+        }
+
+        if (Time.time - lostSearchingTime >= 2)
+        {
+            worldState["hasSpottedPlayer"] = false;
         }
     }
 }

@@ -67,27 +67,7 @@ public class Agent : MonoBehaviour
         action.OnUpdateAction(dataProvider.GetWorldState());
         UI.text = action.name;
     }
-
-    public void AddAction(Action a)
-    {
-        availableActions.Add(a);
-    }
-
-    public Action GetAction(Action action)
-    {
-        foreach (Action g in availableActions)
-        {
-            if (g.GetType().Equals(action))
-                return g;
-        }
-        return null;
-    }
-
-    public void RemoveAction(Action action)
-    {
-        availableActions.Remove(action);
-    }
-
+    
     private bool HasActionPlan()
     {
         return currentActions.Count > 0;

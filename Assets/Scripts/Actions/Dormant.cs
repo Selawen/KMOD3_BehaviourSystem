@@ -18,7 +18,7 @@ public class Dormant : Action
         foreach(KeyValuePair<string, object> worldCondition in parent.GetWorldState())
         {
            
-            addPrecondition(worldCondition.Key, worldCondition.Value);
+            AddPrecondition(worldCondition.Key, worldCondition.Value);
         }
     }
 
