@@ -4,9 +4,9 @@ using UnityEngine;
 
 public abstract class Goal : MonoBehaviour
 {
-    public float priority;
+    private float priority;
     
-    private Dictionary<string, object> goalState = new Dictionary<string, object>();
+    protected  Dictionary<string, object> goalState = new Dictionary<string, object>();
 
     public Goal()
     {
@@ -37,5 +37,18 @@ public abstract class Goal : MonoBehaviour
         }
         if (!default(KeyValuePair<string, object>).Equals(remove))
             goalState.Remove(remove.Key);
+    }
+
+    public float Priority
+    {
+        get
+        {
+            return priority;
+        }
+    }
+
+    public void ChangePriority(float newPriority)
+    {
+        priority = newPriority;
     }
 }

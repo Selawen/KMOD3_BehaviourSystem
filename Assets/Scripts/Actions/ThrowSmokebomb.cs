@@ -1,24 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
-public class GetWeapon : Action
+public class ThrowSmokebomb : Action
 {
-    private float startTime;
-    private readonly float duration = 0.5f;
+    [SerializeReference] private GameObject enemy;
+    [SerializeField] private GameObject player;
 
-    public GetWeapon()
+    private float startTime;
+    [SerializeField] private float duration = 0.3f;
+
+    public ThrowSmokebomb()
     {
-        name = "picking up weapon";
-        addPrecondition("nearWeapon", true);
-        addPrecondition("seesWeapon", true);
-        addPrecondition("hasWeapon", false);
-        addEffect("hasWeapon", true);
+        name = "throwing smoke bomb";
+        addPrecondition("hidden", true);
+        addPrecondition("playerInDanger", true);
+        addPrecondition("smokebombThrown", false);
+        addEffect("smokebombThrown", true);
+        addEffect("playerInDanger", false);
     }
 
     public override void OnEnterAction()
     {
         startTime = Time.time;
+        enemy = gameObject.GetComponent<IGoap>().GetTarget();
     }
 
     public override void OnExitAction()
@@ -45,16 +51,23 @@ public class GetWeapon : Action
                 return;
             }
         }
+
+
         if (Time.time - startTime > duration)
         {
-            gameObject.GetComponent<IGoap>().GetTarget().transform.parent = gameObject.transform;
+            GameObject smokebomb = ObjectFactory.CreatePrimitive(PrimitiveType.Sphere);
+            smokebomb.transform.localScale = new Vector3(5, 5, 5);
+            Vector3 smokePos = Vector3.Lerp(player.transform.position, enemy.transform.position, 0.3f);
+            smokebomb.transform.position = smokePos;
+            smokebomb.GetComponent<Collider>().isTrigger = true;
+            Destroy(smokebomb, 5);
+
             actionCompleted = true;
         }
     }
 
     protected override void Reset()
     {
-        startTime = 0;
         actionCompleted = false;
         actionFailed = false;
     }

@@ -11,11 +11,14 @@ public class Enemy : MonoBehaviour, IGoap
     private NavMeshAgent meshAgent;
     private NavMeshPath path;
     [SerializeReference] private GameObject target;
+    [SerializeReference] private GameObject player;
 
-    private float visionAngle = 50.0f;
-    private float visionDistance = 20.0f;
+    [SerializeReference] private float visionAngle = 50.0f;
+    [SerializeReference] private float visionDistance = 30.0f;
+    [SerializeReference] private float nearDistance = 1.5f;
+    [SerializeReference] private float lostDistance = 10.0f;
 
-    void Start()
+    void Awake()
     {
         worldState = new Dictionary<string, object>();
         actionPlan = new Queue<Action>();
@@ -33,6 +36,7 @@ public class Enemy : MonoBehaviour, IGoap
         worldState.Add("playerKilled", false);
         worldState.Add("nearWeapon", false);
         worldState.Add("nearPlayer", false);
+        worldState.Add("hasSpottedPlayer", false);
     }
 
     public void ActionFinished(Action finishedAction)
@@ -89,6 +93,18 @@ public class Enemy : MonoBehaviour, IGoap
         return worldState;
     }
 
+    public bool CheckForPrecondition(string _precondition, object _value)
+    {
+        foreach(KeyValuePair<string, object> kvp in worldState)
+        {
+            if (kvp.Key.Equals(_precondition) && kvp.Value.Equals(_value))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public GameObject GetTarget()
     {
         return target;
@@ -131,5 +147,40 @@ public class Enemy : MonoBehaviour, IGoap
     public float VisionDistance()
     {
         return visionDistance;
+    }
+
+    public float NearDistance()
+    {
+        return nearDistance;
+    }
+
+    public float LostDistance()
+    {
+        return lostDistance;
+    }
+
+    public void UpdateWorldState()
+    {
+        if (player == null)
+        {
+            worldState["playerKilled"] = true;
+            return;
+        }
+        if ((transform.position - player.transform.position).magnitude > nearDistance)
+        {
+            worldState["nearPlayer"] = false;
+        }
+        if ((transform.position - player.transform.position).magnitude > lostDistance)
+        {
+            worldState["seesPlayer"] = false;
+        }
+        if (Physics.Raycast(transform.position, (player.transform.position - transform.position), out RaycastHit raycastHit))
+        {
+            if (raycastHit.transform.position != player.transform.position)
+            {
+                worldState["seesPlayer"] = false;
+                worldState["hasSpottedPlayer"] = false;
+            }
+        }
     }
 }

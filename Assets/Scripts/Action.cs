@@ -96,6 +96,6 @@ public abstract class Action : MonoBehaviour
     protected abstract void Reset();
 
     public abstract void OnEnterAction();
-    public abstract void OnUpdateAction();
+    public abstract void OnUpdateAction(Dictionary<string, object> worldState);
     public abstract void OnExitAction();
 }

@@ -5,10 +5,9 @@ using UnityEngine;
 public class ProtectPlayer : Goal
 {
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        priority = 0.5f;
-        AddCondition("protectedPlayer", true);
+        ChangePriority(1);
+        AddCondition("playerInDanger", false);
     }
-
 }

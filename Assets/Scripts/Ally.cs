@@ -11,18 +11,22 @@ public class Ally : MonoBehaviour, IGoap
     private NavMeshAgent meshAgent;
     private NavMeshPath path;
     [SerializeReference] private GameObject target;
+    [SerializeReference] private GameObject player;
+    private Enemy[] enemies;
 
+    [SerializeReference] private float visionAngle = 70.0f;
+    [SerializeReference] private float visionDistance = 30.0f;
+    [SerializeReference] private float nearDistance = 5.0f;
+    [SerializeReference] private float lostDistance = 100.0f;
 
-    private float visionAngle = 70.0f;
-    private float visionDistance = 30.0f;
-
-    void Start()
+    void Awake()
     {
         worldState = new Dictionary<string, object>();
         actionPlan = new Queue<Action>();
         AddStartState();
         meshAgent = gameObject.GetComponent<NavMeshAgent>();
         path = new NavMeshPath();
+        enemies = FindObjectsOfType<Enemy>();
     }
 
     private void AddStartState()
@@ -30,6 +34,11 @@ public class Ally : MonoBehaviour, IGoap
         //ToDo: make this non-static
         worldState.Add("seesPlayer", false);
         worldState.Add("nearPlayer", false);
+        worldState.Add("hasWeapon", true);
+        worldState.Add("hidden", false);
+        worldState.Add("smokebombThrown", false);
+        worldState.Add("playerKilled", false);
+        worldState.Add("playerInDanger", false);
     }
 
     public void ActionFinished(Action finishedAction)
@@ -37,6 +46,7 @@ public class Ally : MonoBehaviour, IGoap
         /**
  * Apply the stateChange to the currentState
  */
+        //actionPlan.Dequeue();
 
         Dictionary<string, object> state = new Dictionary<string, object>();
         // copy the KVPs over as new objects
@@ -55,7 +65,7 @@ public class Ally : MonoBehaviour, IGoap
                 if (s.Key.Equals(change.Key))
                 {
                     exists = true;
-                    state.Remove(s.Key);
+                    state.Remove(change.Key);
                     state.Add(change.Key, change.Value);
                     break;
                 }
@@ -128,6 +138,46 @@ public class Ally : MonoBehaviour, IGoap
     public float VisionDistance()
     {
         return visionDistance;
+    }
+
+    public float NearDistance()
+    {
+        return nearDistance;
+    }
+
+    public float LostDistance()
+    {
+        return lostDistance;
+    }
+
+    public void UpdateWorldState()
+    {
+        if (player == null)
+        {
+            worldState["playerKilled"] = true;
+            return;
+        }
+
+        foreach(Enemy enemy in enemies)
+        {
+            if (enemy.CheckForPrecondition("seesPlayer", true))
+            {
+                worldState["playerInDanger"] = true;
+                target = enemy.gameObject;
+                return;
+            }
+        }
+        worldState["playerInDanger"] = false;
+        target = player;
+
+        if ((transform.position - player.transform.position).magnitude > nearDistance)
+        {
+            worldState["nearPlayer"] = false;
+        }
+        if ((transform.position - player.transform.position).magnitude > lostDistance)
+        {
+            worldState["seesPlayer"] = false;
+        }
     }
 }
 

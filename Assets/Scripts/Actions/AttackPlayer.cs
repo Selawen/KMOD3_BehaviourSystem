@@ -13,6 +13,7 @@ public class AttackPlayer : Action
         addPrecondition("hasWeapon", true); 
         addPrecondition("seesPlayer", true); 
         addPrecondition("nearPlayer", true); 
+        addPrecondition("hasSpottedPlayer", true); 
         addPrecondition("playerKilled", false); 
         addEffect("playerKilled", true);
     }
@@ -27,9 +28,25 @@ public class AttackPlayer : Action
         Reset();
     }
 
-    public override void OnUpdateAction()
+    public override void OnUpdateAction(Dictionary<string, object> worldState)
     {
-        
+        foreach (KeyValuePair<string, object> precondition in Preconditions)
+        {
+            bool match = false;
+            foreach (KeyValuePair<string, object> s in worldState)
+            {
+                if (s.Equals(precondition))
+                {
+                    match = true;
+                    break;
+                }
+            }
+            if (!match)
+            {
+                actionFailed = true;
+                return;
+            }
+        }
         if ((transform.position - target.transform.position).magnitude < 2)
         {
             actionCompleted = true;

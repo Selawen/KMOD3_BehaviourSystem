@@ -8,6 +8,8 @@ public class MoveToPlayer : Action
 
     private GameObject target;
     private float elapsed;
+    private float nearDistance;
+    private float lostDistance;
 
     public MoveToPlayer()
     {
@@ -22,15 +24,36 @@ public class MoveToPlayer : Action
     public override void OnEnterAction()
     {
         target = gameObject.GetComponent<IGoap>().GetTarget();
+        nearDistance = gameObject.GetComponent<IGoap>().NearDistance();
+        lostDistance = gameObject.GetComponent<IGoap>().LostDistance();
     }
 
     public override void OnExitAction()
     {
+        gameObject.GetComponent<NavMeshAgent>().ResetPath();
         Reset();
     }
 
-    public override void OnUpdateAction()
+    public override void OnUpdateAction(Dictionary<string,object> worldState)
     {
+        foreach(KeyValuePair<string, object> precondition in Preconditions)
+        {
+            bool match = false;
+            foreach(KeyValuePair<string, object> s in worldState)
+            {
+                if (s.Equals(precondition))
+                {
+                    match = true;
+                    break;
+                }
+            }
+            if (!match)
+            {
+                actionFailed = true;
+                return;
+            }
+        }
+
         elapsed += Time.deltaTime;
         if (elapsed > 1.0f)
         {
@@ -42,9 +65,13 @@ public class MoveToPlayer : Action
             }
         }
 
-        if ((transform.position-target.transform.position).magnitude < 1.5f)
+        if ((transform.position-target.transform.position).magnitude < nearDistance)
         {
-            actionCompleted = true;
+            actionCompleted = true; 
+        }
+        else if ((transform.position - target.transform.position).magnitude > lostDistance)
+        {
+            actionFailed = true;
         }
     }
 

@@ -15,6 +15,8 @@ public interface IGoap
 {
     float VisionAngle();
     float VisionDistance();
+    float NearDistance();
+    float LostDistance();
 
     /**
 	 * The starting state of the Agent and the world.
@@ -22,11 +24,14 @@ public interface IGoap
 	 */
     Dictionary<string, object> GetWorldState();
 
+
+    void UpdateWorldState();
+
     /**
 	 * Give the planner a new goal so it can figure out 
 	 * the actions needed to fulfill it.
 	 */
-     //not necessary 
+    //not necessary 
     //Dictionary<string, object> SetNewGoal();
 
     /**

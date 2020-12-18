@@ -27,18 +27,20 @@ public class Agent : MonoBehaviour
 
         dataProvider = gameObject.GetComponent<IGoap>();
 
-        loadActions();
-        loadGoals();
-        newPlan();
+        LoadActions();
+        LoadGoals();
+        NewPlan();
     }
 
     // Update is called once per frame
     void Update()
     {
+        dataProvider.UpdateWorldState();
+
         // Create a new plan if the last one finished
-        if (!hasActionPlan())
+        if (!HasActionPlan())
         {
-            newPlan();
+            NewPlan();
         }
 
         action = currentActions.Peek();
@@ -48,6 +50,10 @@ public class Agent : MonoBehaviour
             action.OnExitAction();
             dataProvider.ActionFinished(action);
             currentActions.Dequeue();
+            if (currentActions == null || !HasActionPlan())
+            {
+                return;
+            }
             action = currentActions.Peek();
             action.OnEnterAction();
         }
@@ -58,16 +64,16 @@ public class Agent : MonoBehaviour
             return;
         }
 
-        action.OnUpdateAction();
+        action.OnUpdateAction(dataProvider.GetWorldState());
         UI.text = action.name;
     }
 
-    public void addAction(Action a)
+    public void AddAction(Action a)
     {
         availableActions.Add(a);
     }
 
-    public Action getAction(Action action)
+    public Action GetAction(Action action)
     {
         foreach (Action g in availableActions)
         {
@@ -77,17 +83,17 @@ public class Agent : MonoBehaviour
         return null;
     }
 
-    public void removeAction(Action action)
+    public void RemoveAction(Action action)
     {
         availableActions.Remove(action);
     }
 
-    private bool hasActionPlan()
+    private bool HasActionPlan()
     {
         return currentActions.Count > 0;
     }
 
-    private void loadActions()
+    private void LoadActions()
     {
         Action[] actions = gameObject.GetComponents<Action>();
         foreach (Action a in actions)
@@ -96,7 +102,7 @@ public class Agent : MonoBehaviour
         }
     }
 
-    private void loadGoals()
+    private void LoadGoals()
     {
         Goal[] goals = gameObject.GetComponents<Goal>();
         foreach (Goal g in goals)
@@ -105,7 +111,7 @@ public class Agent : MonoBehaviour
         }
     }
 
-    private void newPlan()
+    private void NewPlan()
     {
         Dictionary<string, object> worldState = dataProvider.GetWorldState();
 

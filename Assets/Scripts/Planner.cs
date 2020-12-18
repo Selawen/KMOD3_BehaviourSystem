@@ -9,9 +9,15 @@ public class Planner
                                   HashSet<Goal> availableGoals,
                                   Dictionary<string, object> worldState)
     {
-        Goal thisGoal = SetGoal(availableGoals);
+        HashSet<Goal> usableGoals = new HashSet<Goal>();
 
-        /*
+        foreach (Goal g in availableGoals)
+        {
+            usableGoals.Add(g);
+        }
+
+        Goal thisGoal = SetGoal(usableGoals);
+
         // check what actions can run
         HashSet<Action> usableActions = new HashSet<Action>();
         foreach (Action a in availableActions)
@@ -24,7 +30,7 @@ public class Planner
                 }
             }
         }
-        */
+
         
 
         // we now have all actions that can run, stored in usableActions
@@ -34,13 +40,27 @@ public class Planner
 
         // build graph
         Node start = new Node(null, 0, worldState, null);
-        bool success = buildGraph(start, leaves, availableActions, thisGoal.GoalState);
 
-        if (!success)
+
+        //bool success = BuildGraph(start, leaves, availableActions, thisGoal.GoalState);
+
+        //if (!success)
+        while (!BuildGraph(start, leaves, availableActions, thisGoal.GoalState))
         {
-            // oh no, we didn't get a plan
-            Debug.Log("NO PLAN");
-            return null;
+            // oh no, we didn't get a plan, try with another goal
+            usableGoals.Remove(thisGoal);
+            if (usableGoals.Count > 0)
+            {
+                thisGoal = SetGoal(usableGoals);
+            }
+            else
+            {
+                Queue<Action> dormantQueue = new Queue<Action>();
+
+                //Debug.Log(thisGoal.name+ ": " + a.name);
+                dormantQueue.Enqueue(new Dormant(agent.GetComponent<IGoap>()));
+                return dormantQueue;
+            }
         }
 
         // get the cheapest leaf
@@ -73,7 +93,7 @@ public class Planner
         Queue<Action> queue = new Queue<Action>();
         foreach (Action a in result)
         {
-            //Debug.Log(a.name);
+            //Debug.Log(thisGoal.name+ ": " + a.name);
             queue.Enqueue(a);
         }
         
@@ -106,7 +126,7 @@ public class Planner
             {
                 tempGoal = g;
             }
-            else if (g.priority > tempGoal.priority)
+            else if (g.Priority > tempGoal.Priority)
             {
                 tempGoal = g;
             }
@@ -124,7 +144,7 @@ public class Planner
 	 * 'runningCost' value where the lowest cost will be the best action
 	 * sequence.
 	 */
-    private bool buildGraph(Node parent, List<Node> leaves, HashSet<Action> usableActions, Dictionary<string, object> goal)
+    private bool BuildGraph(Node parent, List<Node> leaves, HashSet<Action> usableActions, Dictionary<string, object> goal)
     {
         bool foundOne = false;
 
@@ -151,7 +171,7 @@ public class Planner
                 {
                     // not at a solution yet, so test all the remaining actions and branch out the tree
                     HashSet<Action> subset = actionSubset(usableActions, action);
-                    bool found = buildGraph(node, leaves, subset, goal);
+                    bool found = BuildGraph(node, leaves, subset, goal);
                     if (found)
                         foundOne = true;
                 }

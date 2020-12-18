@@ -5,9 +5,10 @@ using UnityEngine;
 public class FollowPlayer : Goal
 {
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        priority = 1;
+        ChangePriority(0.5f);
         AddCondition("nearPlayer", true);
+        AddCondition("hidden", false);
     }
 }

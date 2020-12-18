@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class MoveToWeapon : Action
+public class ActionTemplate : Action
 {
 
-    public MoveToWeapon()
+    public ActionTemplate()
     {
-        name = "moving towards weapon";
-        addPrecondition("hasWeapon", false);
-        addPrecondition("seesWeapon", true);
-        addPrecondition("nearWeapon", false);
-        addEffect("nearWeapon", true);
+        name = "action name";
+        addPrecondition("precondition", true);
+        addEffect("effect", true);
     }
 
     public override void OnEnterAction()
@@ -25,12 +23,12 @@ public class MoveToWeapon : Action
         Reset();
     }
 
-    public override void OnUpdateAction(Dictionary<string, object> worldState)
+    public override void OnUpdateAction(Dictionary<string,object> worldState)
     {
-        foreach (KeyValuePair<string, object> precondition in Preconditions)
+        foreach(KeyValuePair<string, object> precondition in Preconditions)
         {
             bool match = false;
-            foreach (KeyValuePair<string, object> s in worldState)
+            foreach(KeyValuePair<string, object> s in worldState)
             {
                 if (s.Equals(precondition))
                 {
@@ -43,10 +41,6 @@ public class MoveToWeapon : Action
                 actionFailed = true;
                 return;
             }
-        }
-        if (!gameObject.GetComponent<NavMeshAgent>().hasPath)
-        {
-            actionCompleted = true;
         }
     }
 

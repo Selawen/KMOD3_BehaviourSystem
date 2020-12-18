@@ -3,20 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SearchForWeapon : Action
+public class Patrol : Action
 {
+    [SerializeField] Vector3[] patrolPoints = new Vector3[4];
+    private int patrolIndex = 0;
+
     [SerializeField] private GameObject target;
 
     private float visionAngle;
     private float visionDistance;
 
-    public SearchForWeapon()
+    public Patrol()
     {
-        name = "looking for weapon";
-        addPrecondition("seesWeapon", false);
-        addPrecondition("hasWeapon", false);
-        addPrecondition("hasSpottedPlayer", true);
-        addEffect("seesWeapon", true);
+        name = "patrolling";
+        addPrecondition("hasSpottedPlayer", false);
+        addPrecondition("playerKilled", false);
+        addEffect("hasSpottedPlayer", true);
     }
 
     public override void OnEnterAction()
@@ -30,12 +32,12 @@ public class SearchForWeapon : Action
         Reset();
     }
 
-    public override void OnUpdateAction(Dictionary<string, object> worldState)
+    public override void OnUpdateAction(Dictionary<string,object> worldState)
     {
-        foreach (KeyValuePair<string, object> precondition in Preconditions)
+        foreach(KeyValuePair<string, object> precondition in Preconditions)
         {
             bool match = false;
-            foreach (KeyValuePair<string, object> s in worldState)
+            foreach(KeyValuePair<string, object> s in worldState)
             {
                 if (s.Equals(precondition))
                 {
@@ -49,21 +51,32 @@ public class SearchForWeapon : Action
                 return;
             }
         }
+
         Vector3 targetDir = target.transform.position - transform.position;
         Vector3 forward = transform.forward;
         float angle = Vector3.Angle(targetDir, forward);
         float distance = (target.transform.position - transform.position).magnitude;
-        if (angle < visionAngle && distance < visionDistance)
+        if (angle < visionAngle && distance < visionDistance && Physics.Raycast(transform.position, targetDir, out RaycastHit raycastHit))
         {
-            gameObject.GetComponent<IGoap>().SetTarget(target);
-            actionCompleted = true;
+            if (raycastHit.transform.position == target.transform.position)
+            {
+                gameObject.GetComponent<IGoap>().SetTarget(target);
+                actionCompleted = true;
+                return;
+            }
         }
-        else if(!gameObject.GetComponent<NavMeshAgent>().hasPath)
+
+        if (!gameObject.GetComponent<NavMeshAgent>().hasPath)
         {
             NavMeshPath path = new NavMeshPath();
-            if (NavMesh.CalculatePath(transform.position, (transform.position + new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10))), NavMesh.AllAreas, path))
+            if (NavMesh.CalculatePath(transform.position, patrolPoints[patrolIndex], NavMesh.AllAreas, path))
             {
                 gameObject.GetComponent<NavMeshAgent>().SetPath(path);
+                if (patrolIndex == 3)
+                {
+                    patrolIndex = -1;
+                }
+                patrolIndex++;
             }
         }
     }
